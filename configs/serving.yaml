@@ -1,0 +1,31 @@
+# Serving configuration (vLLM-style). The mock backend reads the same
+# fields; a real vLLM deployment passes them to the engine.
+# All values are examples for the demo — tune per model and GPU.
+backend: mock            # mock | vllm | openai-compatible
+model: mock-diagnostic-llm-0.1
+
+# Tensor parallelism: GPUs the model is sharded across.
+tensor_parallel_size: 1
+
+# Weight precision: none | fp16 | bf16 | fp8 | awq | gptq
+quantization: none
+
+# Batching: max concurrent sequences. Too small under-utilises the GPU;
+# too large exhausts the KV cache (see the throughput diagnostic).
+max_num_seqs: 64
+
+# KV-cache budget in GiB.
+kv_cache_gb: 16.0
+
+# Speculative decoding.
+enable_speculative: false
+draft_model: ""
+speculative_accept_rate: 0.7
+
+# Sampling.
+max_tokens: 512
+temperature: 0.0
+top_p: 1.0
+
+# OpenAI-compatible endpoint (only for backend: openai-compatible).
+# endpoint: http://localhost:8000/v1/chat/completions

@@ -1,0 +1,19 @@
+# Ray Serve sketch — GPU run only (see network_intelligence/ray_serve.py).
+# `serve run configs/ray_serve.yaml` on a GPU machine with ray[serve].
+# The 1-GPU-vs-4-GPU decision: num_replicas scales out, while
+# tensor_parallel_size (ServingConfig) shards one model across GPUs.
+# For an 8B model, 1 GPU per replica + more replicas usually beats
+# sharding; measure before choosing.
+applications:
+  - name: network-intelligence
+    route_prefix: /diagnose
+    import_path: network_intelligence.ray_serve:build_app
+    deployments:
+      - name: diagnostic-llm
+        num_replicas: 1
+        ray_actor_options:
+          num_gpus: 1
+        autoscaling_config:
+          min_replicas: 1
+          max_replicas: 4
+          target_ongoing_requests: 8

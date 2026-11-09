@@ -1,0 +1,25 @@
+# LoRA SFT config for the diagnostic model.
+# GPU run only: python train_sft.py --config configs/lora_sft.yaml
+base_model: meta-llama/Llama-3.1-8B-Instruct   # replace with your licensed base model
+dataset: data/sft_train.jsonl                  # curated by finetune.curate_dataset
+
+peft:
+  r: 16
+  lora_alpha: 32
+  lora_dropout: 0.05
+  target_modules: [q_proj, k_proj, v_proj, o_proj]
+  task_type: CAUSAL_LM
+
+training:
+  per_device_train_batch_size: 4
+  gradient_accumulation_steps: 4
+  learning_rate: 0.0002
+  num_train_epochs: 3
+  bf16: true
+  logging_steps: 10
+  save_steps: 100
+  output_dir: checkpoints/sft-v0.1.0
+
+# Eval gate: the registry only promotes a version with
+# root-cause accuracy >= 0.75 on the golden cases (see registry.py).
+eval_gate_accuracy: 0.75
