@@ -1,0 +1,54 @@
+[
+  {
+    "id": "gold-01",
+    "incident": {
+      "id": "INC-1001",
+      "title": "LLM inference throughput collapsed to ~3 tok/s",
+      "device": "gpu-node-02",
+      "severity": "critical",
+      "signals": {"inference_tok_per_s": 3.1, "kv_cache_usage_pct": 97.0, "p99_latency_ms": 4200.0, "gpu_util_pct": 34.0},
+      "expected_root_cause": "kv_cache_exhaustion"
+    },
+    "expected_root_cause": "kv_cache_exhaustion",
+    "expected_evidence_keywords": ["kv_cache", "97", "batch"]
+  },
+  {
+    "id": "gold-02",
+    "incident": {
+      "id": "INC-1002",
+      "title": "Packet loss between leaf-01 and spine-01",
+      "device": "leaf-01",
+      "severity": "critical",
+      "signals": {"packet_loss_pct": 2.3, "interface_errors": 41.0, "p99_latency_ms": 640.0},
+      "expected_root_cause": "faulty_optic"
+    },
+    "expected_root_cause": "faulty_optic",
+    "expected_evidence_keywords": ["packet loss", "CRC", "leaf-01"]
+  },
+  {
+    "id": "gold-03",
+    "incident": {
+      "id": "INC-1003",
+      "title": "GPU underutilised while request queue grows",
+      "device": "gpu-node-03",
+      "severity": "warning",
+      "signals": {"gpu_util_pct": 12.0, "inference_tok_per_s": 6.5, "p99_latency_ms": 950.0},
+      "expected_root_cause": "batching_too_small"
+    },
+    "expected_root_cause": "batching_too_small",
+    "expected_evidence_keywords": ["gpu_util", "12", "batch"]
+  },
+  {
+    "id": "gold-04",
+    "incident": {
+      "id": "INC-1004",
+      "title": "Elevated p99 latency, no errors",
+      "device": "gpu-node-01",
+      "severity": "info",
+      "signals": {"p99_latency_ms": 260.0, "gpu_util_pct": 74.0, "inference_tok_per_s": 17.5},
+      "expected_root_cause": "no-fault"
+    },
+    "expected_root_cause": "no-fault",
+    "expected_evidence_keywords": ["no-fault"]
+  }
+]
