@@ -1,0 +1,12 @@
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.env
+.env.*
+checkpoints/
+data/sft_train.jsonl
+*.log
+.DS_Store
+.pytest_cache/

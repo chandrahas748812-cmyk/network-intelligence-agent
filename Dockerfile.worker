@@ -1,0 +1,11 @@
+# Watcher image: runs the background telemetry monitor on a schedule.
+# Same code, different entrypoint — the watcher loop lives in
+# network_intelligence/watcher.py; this container just calls it.
+FROM python:3.11-slim
+
+WORKDIR /app
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+COPY . .
+
+CMD ["python", "-c", "from network_intelligence.watcher import TelemetryWatcher; from network_intelligence.stores import build_stores; from network_intelligence.config import StoreConfig; from network_intelligence.telemetry import TelemetryGenerator; import time; m,_,c = build_stores(StoreConfig.from_env()); m.load(TelemetryGenerator(seed=42).generate()); w = TelemetryWatcher(m, cache=c); [print(a.to_dict()) for a in w.scan()]; print('watcher pass done')"]

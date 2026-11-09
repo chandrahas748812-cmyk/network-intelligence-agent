@@ -1,0 +1,53 @@
+# Local stack: API + Postgres (metrics/incidents) + Redis (dedup cache).
+# The demo runs without any of this (in-memory fallbacks), but the
+# compose stack is how you exercise the real stores.
+services:
+  api:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      DATABASE_URL: postgresql://nia:nia@db:5432/nia
+      REDIS_URL: redis://redis:6379/0
+      NIA_BACKEND: mock
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
+
+  worker:
+    build:
+      context: .
+      dockerfile: Dockerfile.worker
+    environment:
+      DATABASE_URL: postgresql://nia:nia@db:5432/nia
+      REDIS_URL: redis://redis:6379/0
+    depends_on:
+      - db
+      - redis
+
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: nia
+      POSTGRES_PASSWORD: nia
+      POSTGRES_DB: nia
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U nia"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7
+    ports:
+      - "6379:6379"
+
+volumes:
+  pgdata:
