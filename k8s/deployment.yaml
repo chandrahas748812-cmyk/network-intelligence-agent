@@ -1,0 +1,60 @@
+# API deployment. Replace the image with your registry path.
+# GPU serving: add `nvidia.com/gpu: "1"` under resources.limits and
+# switch the image to the CUDA build (see README "Running on a real GPU").
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: network-intelligence-api
+  labels:
+    app: network-intelligence
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: network-intelligence
+  template:
+    metadata:
+      labels:
+        app: network-intelligence
+    spec:
+      containers:
+        - name: api
+          image: network-intelligence-agent:latest
+          ports:
+            - containerPort: 8000
+          envFrom:
+            - configMapRef:
+                name: network-intelligence-config
+          env:
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: network-intelligence-secrets
+                  key: database-url
+                  optional: true
+            - name: REDIS_URL
+              valueFrom:
+                secretKeyRef:
+                  name: network-intelligence-secrets
+                  key: redis-url
+                  optional: true
+          resources:
+            requests:
+              cpu: "500m"
+              memory: "512Mi"
+            limits:
+              cpu: "2"
+              memory: "2Gi"
+              # nvidia.com/gpu: "1"   # uncomment for GPU serving
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 5
+            periodSeconds: 5

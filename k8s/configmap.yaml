@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: network-intelligence-config
+data:
+  NIA_BACKEND: "mock"          # mock | vllm | openai-compatible
+  NIA_MODEL: "mock-diagnostic-llm-0.1"
+  NIA_TENSOR_PARALLEL_SIZE: "1"
+  NIA_QUANTIZATION: "none"
+  NIA_MAX_NUM_SEQS: "64"
+  NIA_KV_CACHE_GB: "16"
+  NIA_SPECULATIVE: "false"
+  NIA_AGENT_MAX_STEPS: "8"
+  NIA_WATCHER_Z: "3.0"
